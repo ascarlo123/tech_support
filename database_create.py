@@ -6,7 +6,7 @@ cursor = connection.cursor()
 cursor.execute('''
 CREATE TABLE IF NOT EXISTS Questions (
 id INTEGER PRIMARY KEY,
-username TEXT NOT NULL,
+nickname TEXT NOT NULL,
 question TEXT NOT NULL
 )
 ''')
