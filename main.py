@@ -1,6 +1,7 @@
 import telebot
 from config import TOKEN
 from telebot import types
+import sqlite3
 
 API_TOKEN = TOKEN
 bot = telebot.TeleBot(API_TOKEN)
@@ -39,6 +40,20 @@ def send_faq_answer(message):
 @bot.message_handler(func=lambda message: message.text == "Задать вопрос")
 def ask_question(message):
     bot.send_message(message.chat.id, "Пожалуйста, напишите ваш вопрос, и мы постараемся на него ответить.")
+    bot.register_next_step_handler(message, process_question)
+
+def add_question(nickname, question):
+    connection = sqlite3.connect('tech_support')
+    cursor = connection.cursor()
+    cursor.execute('INSERT INTO Questions (nickname, question) VALUES (?, ?)', (nickname, question))
+    connection.commit()
+    connection.close()
+
+def process_question(message):
+    first_name = message.from_user.first_name
+    question = message.text
+    add_question(first_name, question)
+    bot.send_message(message.chat.id, "Ваш вопрос отправлен! Мы ответим на него в ближайшее время.")
 
 if __name__ == '__main__':
     bot.polling()
